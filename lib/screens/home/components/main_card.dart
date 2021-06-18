@@ -1,0 +1,138 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:redcircleflutter/constants.dart';
+import 'package:redcircleflutter/size_config.dart';
+
+class MainCard extends StatefulWidget {
+  final String iconPath;
+  final String title;
+  final String subtitle;
+  final String leftDesc;
+  final String rightDesc;
+  final bool underline;
+  const MainCard(
+      {Key key,
+      this.title,
+      this.iconPath,
+      this.subtitle,
+      this.leftDesc,
+      this.rightDesc,
+      this.underline})
+      : super(key: key);
+
+  @override
+  _MainCardState createState() => _MainCardState();
+}
+
+class _MainCardState extends State<MainCard> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: getProportionateScreenWidth(300),
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            border: Border(
+          bottom: BorderSide(
+            width: 0.1,
+            color: widget.underline
+                ? Colors.white
+                : Colors.transparent, // kPrimaryColor,
+          ),
+        )),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            SvgPicture.asset(
+              // "assets/icons/bell.svg",
+              "assets/icons/" + widget.iconPath,
+              // color: Colors.green,
+              height: getProportionateScreenWidth(35),
+              // width:
+              //     getProportionateScreenWidth(SizeConfig.screenHeight * 0.02),
+              // height:
+              //     getProportionateScreenWidth(SizeConfig.screenHeight * 0.02),
+              // width:
+              //     getProportionateScreenWidth(SizeConfig.screenHeight * 0.02),
+            ),
+
+            // Icon(
+            //   Icons.calendar_today,
+            //   color: kPrimaryColor,
+            //   size: getProportionateScreenWidth(35),
+            // ),
+            Container(
+              width: getProportionateScreenWidth(180),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                // mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.title,
+                    // 'CALENDER',
+                    style: TextStyle(
+                        color: kPrimaryColor,
+                        fontSize: getProportionateScreenWidth(25),
+                        fontWeight: FontWeight.w200),
+                  ),
+                  Text(
+                    widget.subtitle,
+                    // 'Today, Wed 30 Dec 2020',
+                    style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: getProportionateScreenWidth(15),
+                        fontWeight: FontWeight.w300),
+                  ),
+                  Visibility(
+                    visible: !(widget.leftDesc == "" && widget.rightDesc == ""),
+                    child: Container(
+                      // decoration: BoxDecoration(
+                      //     border: Border.all(color: kPrimaryColor)),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: getProportionateScreenWidth(40),
+                            child: Text(
+                              widget.leftDesc,
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  color: Colors.white54,
+                                  fontSize: getProportionateScreenWidth(15),
+                                  fontWeight: FontWeight.w300),
+                            ),
+                          ),
+                          Flexible(
+                            child: Text(
+                              widget.rightDesc,
+                              // 'Four Seasons aaa',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  color: kPrimaryColor,
+                                  fontSize: getProportionateScreenWidth(15),
+                                  fontWeight: FontWeight.w300),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+
+            // Image(image: AssetImage('graphics/background.png')),
+            Icon(
+              Icons.keyboard_arrow_right_sharp,
+              color: kPrimaryColor,
+              size: getProportionateScreenWidth(50),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
