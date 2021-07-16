@@ -3,23 +3,23 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1055466875349-32n29n17p2nfg2tscno7j95botjc89l9.apps.googleusercontent.com</string>
+	<string>885229513283-iueannm84hskkhngt4bpbueqvkl1q2a7.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1055466875349-32n29n17p2nfg2tscno7j95botjc89l9</string>
+	<string>com.googleusercontent.apps.885229513283-iueannm84hskkhngt4bpbueqvkl1q2a7</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>1055466875349-vfee8b54uc8q9m32vvhlkr0cqad5mrqo.apps.googleusercontent.com</string>
+	<string>885229513283-cna3bu00dd5ph62h6bafljg9rc8ide41.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyDo6YvJu4m7IoKZ0PzAYSAiV7uIBQ5aZhQ</string>
+	<string>AIzaSyBCjUE5vwIsDq3abo-R3FKpfyD8e6-6v7M</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1055466875349</string>
+	<string>885229513283</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.CompuVision.redcircleflutter</string>
+	<string>com.wondereight.redcircle</string>
 	<key>PROJECT_ID</key>
-	<string>redcircle-f33f3</string>
+	<string>redcircle-c4c25</string>
 	<key>STORAGE_BUCKET</key>
-	<string>redcircle-f33f3.appspot.com</string>
+	<string>redcircle-c4c25.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1055466875349:ios:75381b93d22655f162755c</string>
-	<key>DATABASE_URL</key>
-	<string>https://redcircle-f33f3-default-rtdb.europe-west1.firebasedatabase.app</string>
+	<string>1:885229513283:ios:893e06935cd6bdace242f6</string>
 </dict>
 </plist>

@@ -74,7 +74,7 @@ class _MembershipTabsState extends State<MembershipTabs>
             _kTabPages.add(Plan(
               key: Key(s.data.docs[i].id),
               urlImage: s.data.docs[i]['image'],
-              itemList: getCollection(s.data.docs[i].id.toString()),
+              // itemList: getCollection(s.data.docs[i].id.toString()),
             ));
           }
           return Column(
@@ -143,7 +143,7 @@ class _MembershipTabsState extends State<MembershipTabs>
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: "START YOUR FREE 3-MONTH TRIAL   ",
+                            text: "NEXT   ",
                             style: TextStyle(
                                 color: kPrimaryColor,
                                 fontFamily: "Raleway",

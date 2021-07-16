@@ -8,6 +8,11 @@ class Membership {
   final String companyName;
   final String position;
 
+  final String reference;
+  final String userinterests;
+  final String packageid;
+  final String packageName;
+
   set companyName(String val) {
     companyName = val;
   }
@@ -24,5 +29,9 @@ class Membership {
       this.dob,
       this.country,
       this.companyName,
-      this.position});
+      this.position,
+      this.reference,
+      this.userinterests,
+      this.packageid,
+      this.packageName});
 }

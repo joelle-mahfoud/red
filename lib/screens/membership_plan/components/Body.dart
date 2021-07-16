@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
-import 'MembershipTabs_firebase.dart';
+import 'MembershipTabs.dart';
 
 class Body extends StatelessWidget {
   @override

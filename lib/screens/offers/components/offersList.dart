@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:redcircleflutter/screens/BookingServices/components/Booking_description.dart';
 import 'package:redcircleflutter/apis/api.dart';
 import 'package:redcircleflutter/constants.dart';
 import 'package:redcircleflutter/models/Offer.dart';
+import 'package:redcircleflutter/screens/offers/components/offer_description.dart';
 import 'package:redcircleflutter/size_config.dart';
 
 class OffersList extends StatefulWidget {
@@ -76,7 +76,7 @@ class _OffersListState extends State<OffersList> {
                       press: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BookingDescription(
+                            builder: (context) => OfferDescription(
                                 productId: widget.offers[index].id),
                           )),
                     );
@@ -151,7 +151,9 @@ class OfferCard extends StatelessWidget {
                         ),
                       ),
                       TextSpan(text: offer.location + "\n"), //  "$location\n"),
-                      // TextSpan(text: offer.offerExpiryDate) // "$time")
+                      TextSpan(
+                        text: "Expirs on '" + offer.offerExpiryDate + "'",
+                      ) // "$time")
                     ],
                   ),
                 ),

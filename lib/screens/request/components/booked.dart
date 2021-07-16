@@ -3,10 +3,14 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redcircleflutter/apis/api.dart';
 import 'package:redcircleflutter/components/requestCard.dart';
 import 'package:redcircleflutter/constants.dart';
 import 'package:redcircleflutter/models/Booking.dart';
+import 'package:redcircleflutter/screens/BookingServices/components/Booking_description.dart';
+import 'package:redcircleflutter/screens/offers/components/offer_description.dart';
 import 'package:redcircleflutter/size_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,6 +48,7 @@ class _BookedState extends State<Booked> {
         print(res);
         List<Booking> services =
             (res['data'] as List).map((i) => Booking.fromJson(i)).toList();
+        _refreshController.loadComplete();
         return services;
       } else {
         print(" ${res['message']}");
@@ -78,61 +83,95 @@ class _BookedState extends State<Booked> {
     futureBooking = fetchBooking();
   }
 
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+  void _onRefresh() async {
+    // monitor network fetch
+    await Future.delayed(Duration(milliseconds: 1000));
+    // if failed,use refreshFailed()
+    _refreshController.refreshCompleted();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: KBackgroundColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 15, bottom: 10),
-            child: Text(
-              "Upcoming Requets",
-              style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: getProportionateScreenWidth(18)),
+    return SmartRefresher(
+      controller: _refreshController,
+      onRefresh: _onRefresh,
+      enablePullDown: true,
+      enablePullUp: true,
+      child: Container(
+        color: KBackgroundColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 15, bottom: 10),
+              child: Text(
+                "Upcoming bookings",
+                style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: getProportionateScreenWidth(18)),
+              ),
             ),
-          ),
-          Expanded(
-            child: FutureBuilder(
-              builder: (context, projectSnap) {
-                if (projectSnap.connectionState == ConnectionState.none &&
-                    projectSnap.hasData == null) {
-                  //print('project snapshot data is: ${projectSnap.data}');
-                  return Center(child: CircularProgressIndicator());
-                } else if (projectSnap.hasData) {
-                  return ListView.builder(
-                    itemCount: projectSnap.data.length,
-                    itemBuilder: (context, index) {
-                      Booking booking = projectSnap.data[index];
-                      return RequestCard(
-                        id: booking.id,
-                        title: booking.title,
-                        mainImage: booking.mainImg,
-                        description: booking.description,
-                        subtitle: booking.subtitle,
-                        date: booking.startDate,
-                        subdesc: booking.subdesc,
-                        isLastCard: (index == projectSnap.data.length - 1),
-                      );
-                    },
-                  );
-                }
-                return Padding(
-                    padding: const EdgeInsets.only(top: 15, bottom: 10),
-                    child: Text(
-                      "There are no booked requests!",
-                      style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: getProportionateScreenWidth(18)),
-                    ));
-              },
-              future: futureBooking,
+            Expanded(
+              child: FutureBuilder(
+                builder: (context, projectSnap) {
+                  if (projectSnap.connectionState == ConnectionState.none &&
+                      projectSnap.hasData == null) {
+                    //print('project snapshot data is: ${projectSnap.data}');
+                    return Center(child: CircularProgressIndicator());
+                  } else if (projectSnap.hasData) {
+                    return ListView.builder(
+                      itemCount: projectSnap.data.length,
+                      itemBuilder: (context, index) {
+                        Booking booking = projectSnap.data[index];
+                        final DateFormat formatter = DateFormat('yyyy-MM-dd');
+                        return RequestCard(
+                            id: booking.id,
+                            title: booking.title,
+                            mainImage: booking.mainImg,
+                            description: booking.description,
+                            subtitle: booking.subtitle,
+                            date: formatter.format(booking.startDate),
+                            subdesc: booking.subdesc,
+                            isLastCard: (index == projectSnap.data.length - 1),
+                            onTapCard: () async {
+                              (booking.isOffer == null ||
+                                      booking.isOffer == "0")
+                                  ? Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            BookingDescription(
+                                                productId: booking.listingId),
+                                      ),
+                                    )
+                                  : Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => OfferDescription(
+                                          productId: booking.listingId,
+                                        ),
+                                      ));
+                            });
+                      },
+                    );
+                  }
+                  return Padding(
+                      padding: const EdgeInsets.only(top: 15, bottom: 10),
+                      child: Text(
+                        "There are no booked requests!",
+                        style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: getProportionateScreenWidth(18)),
+                      ));
+                },
+                future: futureBooking,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:redcircleflutter/apis/api.dart';
 import 'package:redcircleflutter/chat/screens/ChatScreen.dart';
 import 'package:redcircleflutter/components/new_to_redcircle.dart';
 import 'package:redcircleflutter/constants.dart';
+import 'package:redcircleflutter/functions/login.dart';
 import 'package:redcircleflutter/models/Offer.dart';
 import 'package:redcircleflutter/size_config.dart';
 import 'package:http/http.dart' as http;
@@ -117,24 +118,6 @@ class _BookingDescriptionState extends State<BookingDescription> {
                                 Carousel(
                                   images: _generateChildrens(
                                       projectSnap1.data.data),
-                                  //images: [
-                                  // ListView.builder(
-                                  //     itemCount:
-                                  //         projectSnap1.data.data.length,
-                                  //     itemBuilder:
-                                  //         (BuildContext ctxt, int index) {
-                                  //       return Image.network(
-                                  //         root_pic +
-                                  //             projectSnap1
-                                  //                 .data.data[1].imgData,
-                                  //       );
-                                  //     })
-
-                                  // ExactAssetImage("assets/images/PLATIMUM.png"),
-                                  // ExactAssetImage("assets/images/BLACK.png"),
-                                  // ExactAssetImage("assets/images/PLATIMUM.png"),
-                                  // ExactAssetImage("assets/images/BLACK.png")
-                                  //],
                                   dotSize: 5.0,
                                   dotSpacing: 15.0,
                                   dotColor: KBackgroundColor,
@@ -444,20 +427,23 @@ class _BookingDescriptionState extends State<BookingDescription> {
                                   height: getProportionateScreenHeight(15),
                                 ),
                                 InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => ChatScreen(
-                                                  productId:
-                                                      projectSnap1.data.id,
-                                                  productName:
-                                                      projectSnap1.data.name,
-                                                )));
-                                    // PAChat(
-                                    //     productid: projectSnap1.data.id,
-                                    //     productName:
-                                    //         projectSnap1.data.name)));
+                                  onTap: () async {
+                                    if (await CheckUserCanUsed(
+                                        AppLifecycleState.resumed, context)) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => ChatScreen(
+                                                    productId:
+                                                        projectSnap1.data.id,
+                                                    productName:
+                                                        projectSnap1.data.name,
+                                                  )));
+                                      // PAChat(
+                                      //     productid: projectSnap1.data.id,
+                                      //     productName:
+                                      //         projectSnap1.data.name)));
+                                    }
                                   },
                                   child: Center(
                                     child: Container(

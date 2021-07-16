@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:redcircleflutter/constants.dart';
+import 'package:redcircleflutter/models/ArgumentsData.dart';
 import '../confirmBillingCycle/components/Body.dart';
 
 class ConfirmBillingCycle extends StatelessWidget {
   static String routeName = "/ConfirmBillingCycle";
   @override
   Widget build(BuildContext context) {
+    print(ModalRoute.of(context).settings.arguments);
+    final ArgumentsData args =
+        ModalRoute.of(context).settings.arguments as ArgumentsData;
+
     // final ScreenArguments args = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +33,7 @@ class ConfirmBillingCycle extends StatelessWidget {
           decoration: BoxDecoration(
             color: KBackgroundColor,
           ),
-          child: Body(),
+          child: Body(argumentsData: args),
         ),
       ),
     );

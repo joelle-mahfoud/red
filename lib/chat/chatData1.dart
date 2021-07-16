@@ -350,7 +350,8 @@ class ChatData1 {
     appName = applicationName;
     _pref = await SharedPreferences.getInstance();
     email = _pref.getString(kEmailPrefKey);
-    pass = _pref.getString(kPassPrefKey);
+    pass = '123456';
+    //_pref.getString(kPassPrefKey);
     realClientId = _pref.getString(kclientIdPrefKey);
 
     //startTime(context);
@@ -373,7 +374,7 @@ class ChatData1 {
     appName = applicationName;
     _pref = await SharedPreferences.getInstance();
     email = _pref.getString(kEmailPrefKey);
-    pass = _pref.getString(kPassPrefKey);
+    pass = '123456'; //_pref.getString(kPassPrefKey);
     realClientId = _pref.getString(kclientIdPrefKey);
     currentAccountName = _pref.getString(kfnamePrefKey);
 

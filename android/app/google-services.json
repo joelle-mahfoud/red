@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "1055466875349",
-    "project_id": "redcircle-f33f3",
-    "storage_bucket": "redcircle-f33f3.appspot.com"
+    "project_number": "885229513283",
+    "project_id": "redcircle-c4c25",
+    "storage_bucket": "redcircle-c4c25.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1055466875349:android:7ca3e5e2a139915a62755c",
+        "mobilesdk_app_id": "1:885229513283:android:d4808163ef9815d9e242f6",
         "android_client_info": {
-          "package_name": "com.CompuVision.redcircleflutter"
+          "package_name": "com.wondereight.redcircle"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1055466875349-vfee8b54uc8q9m32vvhlkr0cqad5mrqo.apps.googleusercontent.com",
+          "client_id": "885229513283-cna3bu00dd5ph62h6bafljg9rc8ide41.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.CompuVision.redcircleflutter",
+            "package_name": "com.wondereight.redcircle",
             "certificate_hash": "08f3f366665156d3d3ca84849b8abd0c2186bf0c"
           }
         },
         {
-          "client_id": "1055466875349-91d42ing8btselton0adf2lc348u6ni7.apps.googleusercontent.com",
+          "client_id": "885229513283-0qqjsgmlgojhgl88vhj0j3uvmu443fof.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyB8JyGCH2gui7lijr-KapxBLDVwkmAEwcU"
+          "current_key": "AIzaSyDR6zdraOcaggsmSeEQicxOzQNEGLIX77Y"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1055466875349-91d42ing8btselton0adf2lc348u6ni7.apps.googleusercontent.com",
+              "client_id": "885229513283-0qqjsgmlgojhgl88vhj0j3uvmu443fof.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

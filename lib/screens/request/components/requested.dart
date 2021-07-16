@@ -7,6 +7,8 @@ import 'package:redcircleflutter/apis/api.dart';
 import 'package:redcircleflutter/components/requestCard.dart';
 import 'package:redcircleflutter/constants.dart';
 import 'package:redcircleflutter/models/Booking.dart';
+import 'package:redcircleflutter/screens/BookingServices/components/Booking_description.dart';
+import 'package:redcircleflutter/screens/offers/components/offer_description.dart';
 import 'package:redcircleflutter/size_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -117,7 +119,24 @@ class _RequestedState extends State<Requested> {
                           subtitle: booking.subtitle,
                           status: booking.status,
                           isLastCard: (index == projectSnap.data.length - 1),
-                          mainImage: booking.mainImg);
+                          mainImage: booking.mainImg,
+                          onTapCard: () async {
+                            (booking.isOffer == null || booking.isOffer == "0")
+                                ? Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => BookingDescription(
+                                          productId: booking.listingId),
+                                    ),
+                                  )
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => OfferDescription(
+                                        productId: booking.listingId,
+                                      ),
+                                    ));
+                          });
                     },
                   );
                 }

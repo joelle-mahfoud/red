@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:redcircleflutter/apis/api.dart';
 import 'package:redcircleflutter/constants.dart';
+import 'package:redcircleflutter/models/about.dart';
 
 import '../../../size_config.dart';
 
@@ -10,7 +12,7 @@ class Plan extends StatelessWidget {
     this.urlImage,
   }) : super(key: key);
 
-  final Future<List<String>> itemList;
+  final Future<List<Benefits>> itemList;
   final String urlImage;
 
   Widget singleItemList(String val) {
@@ -72,7 +74,7 @@ class Plan extends StatelessWidget {
               ],
             ),
             child: Image.network(
-              urlImage,
+              root_pic + urlImage,
               fit: BoxFit.cover,
             ),
           ),
@@ -84,14 +86,17 @@ class Plan extends StatelessWidget {
             child: FutureBuilder(
                 future: itemList,
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
+                  if (snapshot.connectionState == ConnectionState.none) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasData) {
                     return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, i) {
-                          return singleItemList(snapshot.data[i]);
+                          Benefits benefits = snapshot.data[i];
+                          return singleItemList(benefits.benefit);
                         });
-                  }
-                  return Center(child: CircularProgressIndicator());
+                  } else
+                    return Center();
                 }),
           ),
 

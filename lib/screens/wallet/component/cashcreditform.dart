@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:redcircleflutter/constants.dart';
+import 'package:redcircleflutter/functions/login.dart';
+import 'package:redcircleflutter/helper/keyboard.dart';
 import 'package:redcircleflutter/size_config.dart';
 
 class CashCreditRorm extends StatefulWidget {
@@ -39,19 +41,13 @@ class _CashCreditRormState extends State<CashCreditRorm> {
       onChanged: (value) {
         // amount = double.parse(value),
         if (value.isNotEmpty) {
-          removeError(error: kEmailNullError);
-        }
-        if (emailValidatorRegExp.hasMatch(value)) {
-          removeError(error: kInvalidEmailError);
+          removeError(error: kAmountNullError);
         }
         return null;
       },
       validator: (value) {
         if (value.isEmpty) {
-          addError(error: kEmailNullError);
-          return "";
-        } else if (!emailValidatorRegExp.hasMatch(value)) {
-          addError(error: kInvalidEmailError);
+          addError(error: kAmountNullError);
           return "";
         }
         return null;
@@ -105,8 +101,57 @@ class _CashCreditRormState extends State<CashCreditRorm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InkWell(
-                  onTap: () => {
-                    // gotoComfirmbillingCycle(),
+                  onTap: () async {
+                    if (_formKey.currentState.validate()) {
+                      _formKey.currentState.save();
+                      setState(() {
+                        errors.clear();
+                      });
+                      KeyboardUtil.hideKeyboard(context);
+
+                      bool shouldUpdate = await showDialog(
+                          context: context,
+                          barrierDismissible: true,
+                          builder: (context) => AlertDialog(
+                                title: Text(
+                                  'Confirmation',
+                                  style: TextStyle(color: kPrimaryColor),
+                                ),
+                                elevation: 100,
+                                backgroundColor: KBackgroundColor,
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: kPrimaryColor.withOpacity(0.8)),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(10.0))),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.pop(context, false),
+                                    child: Text(
+                                      'No',
+                                      style: TextStyle(color: kPrimaryColor),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => {
+                                      addWallet(1, "0", amount).then((value) {
+                                        if (value != null)
+                                          Navigator.pop(context, true);
+                                        else {
+                                          Navigator.pop(context, false);
+                                        }
+                                      }),
+                                    },
+                                    child: Text(
+                                      'Yes',
+                                      style: TextStyle(color: kPrimaryColor),
+                                    ),
+                                  ),
+                                ],
+                              ));
+                      if (shouldUpdate) {}
+                    }
                   },
                   child: Container(
                     height: getProportionateScreenWidth(50),
@@ -132,14 +177,9 @@ class _CashCreditRormState extends State<CashCreditRorm> {
                               image: AssetImage('assets/images/pay.png'),
                               fit: BoxFit.fitWidth,
                             ),
-                            // child: Icon(
-                            //   Icons.ac_unit_outlined,
-                            //   size: 18,
-                            //   color: Colors.black,
-                            // ),
                           ),
                           TextSpan(
-                            text: "Pay",
+                            text: "Wallet",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontFamily: "Raleway",

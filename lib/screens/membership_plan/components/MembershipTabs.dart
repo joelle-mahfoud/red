@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:redcircleflutter/constants.dart';
+import 'package:redcircleflutter/models/ArgumentsData.dart';
+import 'package:redcircleflutter/models/about.dart';
 import 'package:redcircleflutter/screens/membership_plan/components/MembershipPlan.dart';
 import 'package:redcircleflutter/screens/registration/confirmBillingCycle/confirm_billing_cycle.dart';
+import 'package:redcircleflutter/size_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../constants.dart';
-import '../../../size_config.dart';
+
 import 'Plan.dart';
 
 class MembershipTabs extends StatefulWidget {
@@ -31,34 +34,46 @@ class _MembershipTabsState extends State<MembershipTabs>
     return value;
   }
 
-  gotoComfirmbillingCycle() async {
-    saveIntInLocalMemory("plan", _tabController.index).then((value) => {
-          print("plan :" + value.toString()),
-          Navigator.pushNamed(context, ConfirmBillingCycle.routeName),
-        });
+  gotoComfirmbillingCycle(bool withRegistration) async {
+    String cardId = _tabs[_tabController.index]
+        .key
+        .toString()
+        .replaceAll(new RegExp(r'[^0-9]'), '');
+    print("plan (key):" + cardId);
+    Navigator.pushNamed(context, ConfirmBillingCycle.routeName,
+        arguments: ArgumentsData(cardId, withRegistration));
+    // saveIntInLocalMemory("plan", _tabController.index).then((value) => {
+    //       print("plan :" + value.toString()),
+    //       Navigator.pushNamed(context, ConfirmBillingCycle.routeName,
+    //           arguments: cardId),
+    //     });
   }
 
+  List<Tab> _tabs = [];
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<MembershipPlan>>(
-      future: MembershipPlan.getMembershipPlans(),
+    return FutureBuilder<List<CircleCards>>(
+      // future: MembershipPlan.getMembershipPlans(),
+      future: MembershipPlan.fetchCircleCards(),
       builder: (c, s) {
         if (s.hasData) {
-          List<Tab> tabs = [];
+          // List<Tab> tabs = [];
           List<Widget> _kTabPages = [];
           _tabController = TabController(
               vsync: this, initialIndex: 0, length: s.data.length);
           for (int i = 0; i < s.data.length; i++) {
-            tabs.add(Tab(
+            _tabs.add(Tab(
               key: Key(s.data[i].id.toString()),
               child: Text(
-                s.data[i].title,
+                s.data[i].name,
                 // style: TextStyle(color: Color),
               ),
             ));
 
             _kTabPages.add(Plan(
-              urlImage: s.data[i].title,
+              key: ValueKey<String>(s.data[i].id),
+              urlImage: s.data[i].image,
+              itemList: MembershipPlan.fetchBenefits(s.data[i].id.toString()),
               // itemList: s.data[i].itemList,
             ));
           }
@@ -87,7 +102,7 @@ class _MembershipTabsState extends State<MembershipTabs>
                               color: kPrimaryColor,
                             ),
                           )),
-                          tabs: tabs,
+                          tabs: _tabs,
                         ),
                       ),
                       // body: TabBarView(
@@ -110,7 +125,7 @@ class _MembershipTabsState extends State<MembershipTabs>
                 ),
                 InkWell(
                   onTap: () => {
-                    gotoComfirmbillingCycle(),
+                    gotoComfirmbillingCycle(true),
                   },
                   child: Container(
                     width: getProportionateScreenWidth(
@@ -128,7 +143,7 @@ class _MembershipTabsState extends State<MembershipTabs>
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: "START YOUR FREE 3-MONTH TRIAL   ",
+                            text: "NEXT   ",
                             style: TextStyle(
                                 color: kPrimaryColor,
                                 fontFamily: "Raleway",

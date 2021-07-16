@@ -23,7 +23,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-    
+  add_2_calendar: ^2.1.0
+  store_redirect:
+  font_awesome_flutter:
+  flutter_share:
+  flutter_rating_bar:
+  pull_to_refresh:
   searchable_dropdown: ^1.1.3
   dropdown_search:
   jiffy: ^4.0.0

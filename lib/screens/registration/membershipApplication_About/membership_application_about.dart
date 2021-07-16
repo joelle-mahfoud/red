@@ -8,6 +8,7 @@ class MembershipApplicationAbout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final packageId = ModalRoute.of(context).settings.arguments as String;
     return Scaffold(
       appBar: AppBar(
         brightness: Brightness.dark,
@@ -29,7 +30,7 @@ class MembershipApplicationAbout extends StatelessWidget {
           decoration: BoxDecoration(
             color: KBackgroundColor,
           ),
-          child: Body(),
+          child: Body(packageId: packageId),
         ),
       ),
     );

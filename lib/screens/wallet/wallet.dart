@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:redcircleflutter/constants.dart';
 import 'package:redcircleflutter/helper/keyboard.dart';
-import 'package:redcircleflutter/screens/wallet/component/body.dart';
+import 'package:redcircleflutter/screens/wallet/component/WalletAndRewards.dart';
 import 'package:redcircleflutter/size_config.dart';
-import '../../constants.dart';
 
 class Wallet extends StatelessWidget {
   static String routeName = "/Requests";
@@ -46,7 +46,7 @@ class Wallet extends StatelessWidget {
           decoration: BoxDecoration(
             color: KBackgroundColor,
           ),
-          child: Body(),
+          child: WalletAndRewards(),
         ),
       ),
     );

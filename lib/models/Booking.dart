@@ -3,18 +3,15 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class Booking {
-  final String id;
-  final String title,
-      subtitle,
-      description,
-      startDate,
-      endDate,
-      subdesc,
-      status;
+  final DateTime startDate;
+  final DateTime endDate;
+  final String id, title, subtitle, description, subdesc, status;
   final String mainImg;
   final String unitPrice;
   final bool withPaybutton;
   final String createdDate;
+  final String listingId;
+  final String isOffer;
   final String quantity;
   final String totalPrice;
   Booking(
@@ -31,6 +28,8 @@ class Booking {
       this.withPaybutton,
       this.createdDate,
       this.quantity,
+      this.listingId,
+      this.isOffer,
       this.totalPrice});
 
 // :[{"id":"9","title":"Azimut Magellano","created_date":"2021-06-09","clientname":"Rawan rawan","createname":null,"start_date":"2021-06-09","end_date":"2021-06-30"
@@ -43,15 +42,21 @@ class Booking {
       mainImg: json['main_img'],
       // subtitle: json['subtitle'],
       status: json['status'],
-      // description: json['description'],
+      description: json['description_en'],
       // subdesc: json['subdesc'],
-      startDate: json['start_date'],
-      endDate: json['end_date'],
+      startDate: json['start_date'] != null
+          ? DateTime.parse(json['start_date'])
+          : null,
+      //DateTime.parse(json['start_date']), //start_date
+      endDate:
+          json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
       quantity: json['quantity'],
       createdDate: json['created_date'],
       unitPrice: json["unit_price"],
       totalPrice: json["total_price"],
       withPaybutton: (json['status'] == "Approve") ? true : false,
+      listingId: json.containsKey('listing_id') ? json['listing_id'] : null,
+      isOffer: json.containsKey('is_offer') ? json['is_offer'] : null,
     );
   }
 }
@@ -93,8 +98,148 @@ class CalanderBooking {
   }
 }
 
+Event eventFromJson(String str) => Event.fromJson(json.decode(str));
+String eventToJson(Event data) => json.encode(data.toJson());
+
+class Event {
+  String error;
+  String message;
+  List<Datum> data;
+
+  Event({
+    this.error,
+    this.message,
+    this.data,
+  });
+
+  factory Event.fromJson(Map<String, dynamic> json) => Event(
+        error: json["error"],
+        message: json["message"],
+        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "error": error,
+        "message": message,
+        "data": List<dynamic>.from(data.map((x) => x.toJson())),
+      };
+}
+
+class Datum {
+  bool status;
+  String id;
+  String groupId;
+  DateTime date;
+  String title;
+  int priority;
+  String description;
+  List<dynamic> tasks;
+  DateTime createdDate;
+  int v;
+
+  Datum({
+    this.status,
+    this.id,
+    this.groupId,
+    this.date,
+    this.title,
+    this.priority,
+    this.description,
+    this.tasks,
+    this.createdDate,
+    this.v,
+  });
+
+  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+        status: json["status"],
+        id: json["_id"],
+        groupId: json["group_id"],
+        date: DateTime.parse(json["date"]),
+        title: json["title"],
+        priority: json["priority"],
+        description: json["description"],
+        tasks: List<dynamic>.from(json["tasks"].map((x) => x)),
+        createdDate: DateTime.parse(json["created_date"]),
+        v: json["__v"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "status": status,
+        "_id": id,
+        "group_id": groupId,
+        "date": date.toIso8601String(),
+        "title": title,
+        "priority": priority,
+        "description": description,
+        "tasks": List<dynamic>.from(tasks.map((x) => x)),
+        "created_date": createdDate.toIso8601String(),
+        "__v": v,
+      };
+}
+
+Event1 event1FromJson(String str) => Event1.fromJson(json.decode(str));
+String event1ToJson(Event1 data) => json.encode(data.toJson());
+
+class Event1 {
+  int result;
+  String message;
+  List<dynamic> data;
+  List<Map<String, dynamic>> data2;
+
+  Event1({this.result, this.message, this.data, this.data2});
+
+  factory Event1.fromJson(Map<String, dynamic> json) {
+    print(json);
+    return Event1(
+      result: json["result"],
+      message: json["message"],
+      data: List<Calendar>.from(json["data"].map((x) => Calendar.fromJson(x))),
+      data2: List<Map<String, dynamic>>.from(json["data"].map((x) => x)),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "result": result,
+        "message": message,
+        "data": List<dynamic>.from(data.map((x) => x.toJson())),
+      };
+}
+
+class CalendarItem {
+  String id, title, description;
+  CalendarItem({
+    this.id,
+    this.title,
+    this.description,
+  });
+  factory CalendarItem.fromJson(Map<String, dynamic> json) => CalendarItem(
+      id: json["id"],
+      title: json["title"],
+      description: json["description_en"]);
+}
+
+class Calendar {
+  DateTime date;
+  List<dynamic> bookings;
+
+  Calendar({
+    this.date,
+    this.bookings,
+  });
+
+  factory Calendar.fromJson(Map<String, dynamic> json) => Calendar(
+        date: DateTime.parse(json["date"]),
+        bookings: List<dynamic>.from(json["booking"].map((x) => x)),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "date": date.toIso8601String(),
+        "booking": List<dynamic>.from(bookings.map((x) => x)),
+      };
+}
+
 String calendarBookingval1 =
-    '{"2021-06-11",[{ "id": "1", "title": "title1" }, { "id": "2", "title": "title2" },' +
+    '{"date":"2021-06-11","bookings":[{ "id": "1", "title": "title1" }, { "id": "2", "title": "title2" },' +
         '{ "id": "3", "title": "title3" }]}';
 
 String calendarBookingval =

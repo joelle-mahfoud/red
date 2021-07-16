@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-
-import '../../../../size_config.dart';
+import 'package:redcircleflutter/size_config.dart';
 import 'AboutYouForm.dart';
-// import 'aboutYou.dart';
 
 class Body extends StatelessWidget {
+  final String packageId;
+  Body({Key key, this.packageId}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -16,7 +16,7 @@ class Body extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: AboutYouForm(),
+              child: AboutYouForm(packageId: packageId),
             ),
             SizedBox(height: SizeConfig.screenHeight * 0.04),
           ],

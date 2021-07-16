@@ -14,6 +14,8 @@ import 'package:redcircleflutter/size_config.dart';
 bool firstStart = true;
 
 class AboutYouForm extends StatefulWidget {
+  final String packageId;
+  AboutYouForm({Key key, this.packageId}) : super(key: key);
   @override
   _AboutYouFormState createState() => _AboutYouFormState();
 }
@@ -308,7 +310,8 @@ class _AboutYouFormState extends State<AboutYouForm> {
                                     email: email,
                                     password: password,
                                     dob: dob,
-                                    country: country));
+                                    country: country,
+                                    packageid: widget.packageId));
                           }
                         },
                         child: Container(
@@ -581,11 +584,12 @@ class _AboutYouFormState extends State<AboutYouForm> {
     );
   }
 
+  bool _confirmPasswordVisible = false;
   TextFormField buildComdirmPassFormField() {
     return TextFormField(
       style: TextStyle(color: Colors.white),
       keyboardType: TextInputType.visiblePassword,
-      obscureText: true,
+      obscureText: !_confirmPasswordVisible,
       onSaved: (newValue) => confirmPassword = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
@@ -625,6 +629,17 @@ class _AboutYouFormState extends State<AboutYouForm> {
         ),
         hintText: "Confirm Password",
         hintStyle: TextStyle(color: Colors.white),
+        suffixIcon: IconButton(
+          icon: Icon(
+            _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+            color: Colors.grey, // Theme.of(context).primaryColorDark,
+          ),
+          onPressed: () {
+            setState(() {
+              _confirmPasswordVisible = !_confirmPasswordVisible;
+            });
+          },
+        ),
       ),
     );
   }
@@ -632,10 +647,13 @@ class _AboutYouFormState extends State<AboutYouForm> {
   TextEditingController dateCtl = TextEditingController();
   TextFormField buildbBirthFormField() {
     return TextFormField(
+      // enableInteractiveSelection: false, // will disable paste operation
+      // enabled: false,
+      readOnly: true,
       controller: dateCtl,
       onTap: () async {
         DateTime date = DateTime(1900);
-        FocusScope.of(context).requestFocus(new FocusNode());
+        //FocusScope.of(context).requestFocus(new FocusNode());
 
         date = await showDatePicker(
           context: context,

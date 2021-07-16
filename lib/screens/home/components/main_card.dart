@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:redcircleflutter/constants.dart';
+import 'package:redcircleflutter/main.dart';
 import 'package:redcircleflutter/size_config.dart';
 
 class MainCard extends StatefulWidget {
@@ -24,13 +25,20 @@ class MainCard extends StatefulWidget {
   _MainCardState createState() => _MainCardState();
 }
 
+String removeAllHtmlTags(String htmlText) {
+  RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+  return htmlText.replaceAll(exp, '');
+}
+
 class _MainCardState extends State<MainCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: getProportionateScreenWidth(300),
+      width: getProportionateScreenWidth(310),
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: EdgeInsets.only(top: 15, bottom: 15),
+        // margin: EdgeInsets.only(top: 15, bottom: 15),
         decoration: BoxDecoration(
             border: Border(
           bottom: BorderSide(
@@ -41,6 +49,7 @@ class _MainCardState extends State<MainCard> {
           ),
         )),
         child: Row(
+          // mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -48,7 +57,7 @@ class _MainCardState extends State<MainCard> {
               // "assets/icons/bell.svg",
               "assets/icons/" + widget.iconPath,
               // color: Colors.green,
-              height: getProportionateScreenWidth(35),
+              height: getProportionateScreenWidth(40),
               // width:
               //     getProportionateScreenWidth(SizeConfig.screenHeight * 0.02),
               // height:
@@ -62,12 +71,15 @@ class _MainCardState extends State<MainCard> {
             //   color: kPrimaryColor,
             //   size: getProportionateScreenWidth(35),
             // ),
+            SizedBox(
+              width: 15,
+            ),
             Container(
-              width: getProportionateScreenWidth(180),
+              width: getProportionateScreenWidth(200),
               child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                // mainAxisAlignment: MainAxisAlignment.start,
+                // mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     widget.title,
@@ -77,9 +89,15 @@ class _MainCardState extends State<MainCard> {
                         fontSize: getProportionateScreenWidth(25),
                         fontWeight: FontWeight.w200),
                   ),
+                  // SizedBox(
+                  //   height: 5,
+                  // ),
                   Text(
-                    widget.subtitle,
+                    removeAllHtmlTags(widget.subtitle),
                     // 'Today, Wed 30 Dec 2020',
+                    maxLines: 3,
+                    softWrap: true,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                         color: Colors.white54,
                         fontSize: getProportionateScreenWidth(15),
@@ -91,29 +109,44 @@ class _MainCardState extends State<MainCard> {
                       // decoration: BoxDecoration(
                       //     border: Border.all(color: kPrimaryColor)),
                       child: Row(
+                        // mainAxisSize: MainAxisSize.max,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Container(
-                            width: getProportionateScreenWidth(40),
-                            child: Text(
-                              widget.leftDesc,
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                  color: Colors.white54,
-                                  fontSize: getProportionateScreenWidth(15),
-                                  fontWeight: FontWeight.w300),
+                          Visibility(
+                            visible: (widget.leftDesc != null &&
+                                widget.leftDesc != ""),
+                            child: Container(
+                              width: getProportionateScreenWidth(40),
+                              child: Text(
+                                widget.leftDesc == null ? "" : widget.leftDesc,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: getProportionateScreenWidth(15),
+                                    fontWeight: FontWeight.w300),
+                              ),
                             ),
                           ),
-                          Flexible(
-                            child: Text(
-                              widget.rightDesc,
-                              // 'Four Seasons aaa',
-                              textAlign: TextAlign.start,
-                              style: TextStyle(
-                                  color: kPrimaryColor,
-                                  fontSize: getProportionateScreenWidth(15),
-                                  fontWeight: FontWeight.w300),
+                          Visibility(
+                              visible: (widget.leftDesc != null &&
+                                  widget.leftDesc != ""),
+                              child: SizedBox(width: 15)),
+                          Visibility(
+                            visible: (widget.rightDesc != null &&
+                                widget.rightDesc != ""),
+                            child: Flexible(
+                              child: Text(
+                                widget.rightDesc == null
+                                    ? ""
+                                    : widget.rightDesc,
+                                // 'Four Seasons aaa',
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                    color: kPrimaryColor,
+                                    fontSize: getProportionateScreenWidth(15),
+                                    fontWeight: FontWeight.w300),
+                              ),
                             ),
                           ),
                         ],
@@ -123,12 +156,14 @@ class _MainCardState extends State<MainCard> {
                 ],
               ),
             ),
-
+            // SizedBox(
+            //   height: 5,
+            // ),
             // Image(image: AssetImage('graphics/background.png')),
             Icon(
               Icons.keyboard_arrow_right_sharp,
               color: kPrimaryColor,
-              size: getProportionateScreenWidth(50),
+              size: getProportionateScreenWidth(40),
             ),
           ],
         ),

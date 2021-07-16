@@ -34,9 +34,13 @@ const defaultDuration = Duration(milliseconds: 250);
 final RegExp emailValidatorRegExp =
     RegExp(r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 const String kEmailNullError = "Please Enter your email.";
-const String kCheckAlreadyExistEmailError = "USer Already exist.";
+const String kCheckAlreadyExistEmailError = "User Already exist.";
 const String kPasswordNullError = "Please Enter your password.";
+const String kOldPasswordNullError = "Please Enter your old password.";
+const String kMessageNullError = "Please Enter your message.";
 const String kPasswordWeakError = "Weak password.";
+const String kFullNameNullError = "Please Enter your full name.";
+const String kAmountNullError = "Please Enter your Amount.";
 
 const String kConfirmPasswordNullError =
     "Please Enter your confirmed password.";

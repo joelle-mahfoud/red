@@ -1,4 +1,4 @@
-package com.CompuVision.redcircleflutter
+package com.wondereight.redcircle
 
 import io.flutter.embedding.android.FlutterActivity
 

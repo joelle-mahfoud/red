@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:redcircleflutter/apis/api.dart';
 import 'package:redcircleflutter/constants.dart';
 import 'package:redcircleflutter/models/Offer.dart';
@@ -43,6 +44,12 @@ class _BodyState extends State<Body> {
     offer = fetchOffers();
   }
 
+  String removeAllHtmlTags(String htmlText) {
+    RegExp exp = RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
+
+    return htmlText.replaceAll(exp, '');
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -65,7 +72,8 @@ class _BodyState extends State<Body> {
                             SizeConfig.screenWidth * 0.05),
                       ),
                       child: GestureDetector(
-                        onTap: () => showSecondPage(context),
+                        onTap: () =>
+                            showSecondPage(context, projectSnap.data[1].id),
                         child: Column(
                           children: [
                             Image.network(
@@ -73,7 +81,7 @@ class _BodyState extends State<Body> {
                             Container(
                               color: Colors.black,
                               height: getProportionateScreenHeight(
-                                  SizeConfig.screenHeight * 0.19),
+                                  SizeConfig.screenHeight * 0.15),
                               width: getProportionateScreenWidth(
                                   SizeConfig.screenWidth * 0.9),
                               child: Padding(
@@ -93,24 +101,27 @@ class _BodyState extends State<Body> {
                                     SizedBox(
                                         height: SizeConfig.screenHeight * 0.01),
                                     Text(
-                                      "Limited time",
+                                      "Expirs on '" +
+                                          projectSnap.data[1].offerExpiryDate +
+                                          "'",
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize:
-                                              getProportionateScreenWidth(16)),
+                                              getProportionateScreenWidth(15)),
                                     ),
                                     SizedBox(
                                         height: SizeConfig.screenHeight * 0.01),
                                     Text(
-                                      projectSnap.data[1].descriptionEn,
+                                      removeAllHtmlTags(
+                                          projectSnap.data[1].descriptionEn),
                                       maxLines: 2,
                                       softWrap: true,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontSize:
-                                              getProportionateScreenWidth(16)),
+                                              getProportionateScreenWidth(14)),
                                     ),
                                   ],
                                 ),
@@ -253,11 +264,13 @@ class _BodyState extends State<Body> {
     );
   }
 
-  void showSecondPage(BuildContext context) {
+  void showSecondPage(BuildContext context, String productId) {
     Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => OfferDescription(),
+          builder: (context) => OfferDescription(
+            productId: productId,
+          ),
         ));
   }
 }

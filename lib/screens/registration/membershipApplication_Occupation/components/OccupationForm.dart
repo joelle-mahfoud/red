@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:redcircleflutter/components/LabeledCheckbox.dart';
+import 'package:redcircleflutter/apis/api.dart';
+// import 'package:redcircleflutter/components/LabeledCheckbox.dart';
 import 'package:redcircleflutter/components/LabledRadio.dart';
 import 'package:redcircleflutter/components/form_error.dart';
+import 'package:redcircleflutter/constants.dart';
 import 'package:redcircleflutter/helper/keyboard.dart';
+import 'package:redcircleflutter/models/about.dart';
 import 'package:redcircleflutter/screens/registration/SubmitApplication/SubmitApplication.dart';
 import 'package:redcircleflutter/screens/registration/membership.dart';
-// import 'package:group_radio_button/group_radio_button.dart';
-import '../../../../constants.dart';
-import '../../../../size_config.dart';
+import 'package:http/http.dart' as http;
+import 'package:redcircleflutter/size_config.dart';
 
 class OccupationForm extends StatefulWidget {
   final Membership membership;
@@ -18,10 +22,11 @@ class OccupationForm extends StatefulWidget {
 }
 
 class _OccupationFormState extends State<OccupationForm> {
-  // @override
-  // void initState() {
-  //   _passwordVisible = false;
-  // }
+  @override
+  void initState() {
+    super.initState();
+    futureInterested = fetchInterested();
+  }
   // String _verticalGroupValue = "Pending";
   // List<String> _status = ["Pending", "Released", "Blocked"];
 
@@ -44,12 +49,43 @@ class _OccupationFormState extends State<OccupationForm> {
       });
   }
 
-  bool checkBoxValArts = false;
-  bool checkBoxValBeauty = false;
-  bool checkBoxValShopping = false;
+  Future<List<Interest>> futureInterested;
+  Future<List<Interest>> fetchInterested() async {
+    String url = root + "/" + const_get_interest + "?token=" + token;
+    print(url);
+    dynamic responce =
+        await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
+    print(" ${responce.body}");
+
+    if (responce.statusCode == 200) {
+      Map<String, dynamic> res = jsonDecode(responce.body);
+      if (res['result'] == 1) {
+        print(res);
+        List<Interest> interests =
+            (res['data'] as List).map((i) => Interest.fromJson(i)).toList();
+        return interests;
+      } else {
+        print(" ${res['message']}");
+        return null;
+      }
+    }
+    throw Exception('Failed to load');
+  }
+
   // int _Radioval = -1;
 
-  String _isRadioSelected = "";
+  List<String> inputs = [];
+  void itemChange(bool value, String id) {
+    setState(() {
+      if (value) {
+        if (!inputs.contains(id)) inputs.add(id);
+      } else {
+        if (inputs.contains(id)) inputs.remove(id);
+      }
+    });
+  }
+
+  String _referenceSelected = "";
   @override
   Widget build(BuildContext context) {
     // final List<GroupItem> radioItems = [
@@ -108,47 +144,102 @@ class _OccupationFormState extends State<OccupationForm> {
                         width: getProportionateScreenWidth(
                             SizeConfig.screenWidth * 0.6),
                         padding: const EdgeInsets.only(right: 20.0, left: 20),
-                        child: ListView(
-                          shrinkWrap: true,
-                          children: <Widget>[
-                            LabeledCheckbox(
-                                textColor: Colors.white,
-                                activeColor: kPrimaryColor,
-                                label: "Arts & Culture",
-                                value: this.checkBoxValArts,
-                                onTap: (bool value) {
-                                  setState(() {
-                                    this.checkBoxValArts = value;
-                                  });
-                                }),
-                            SizedBox(
-                                height: getProportionateScreenHeight(
-                                    SizeConfig.screenHeight * 0.01)),
-                            LabeledCheckbox(
-                                textColor: Colors.white,
-                                activeColor: kPrimaryColor,
-                                label: "Wellnerss & Beauty",
-                                value: this.checkBoxValBeauty,
-                                onTap: (bool value) {
-                                  setState(() {
-                                    this.checkBoxValBeauty = value;
-                                  });
-                                }),
-                            SizedBox(
-                                height: getProportionateScreenHeight(
-                                    SizeConfig.screenHeight * 0.01)),
-                            LabeledCheckbox(
-                                textColor: Colors.white,
-                                activeColor: kPrimaryColor,
-                                label: "Shopping",
-                                value: this.checkBoxValShopping,
-                                onTap: (bool value) {
-                                  setState(() {
-                                    this.checkBoxValShopping = value;
-                                  });
-                                }),
-                          ],
-                        ),
+                        child: FutureBuilder(
+                            future: futureInterested,
+                            builder: (context, projectSnap) {
+                              if (projectSnap.connectionState ==
+                                  ConnectionState.none) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else if (projectSnap.hasData) {
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: projectSnap.data.length,
+                                  itemBuilder: (context, index) {
+                                    Interest inter = projectSnap.data[index];
+                                    return new Container(
+                                      color: KBackgroundColor,
+                                      // padding: new EdgeInsets.all(3.0),
+                                      child: new Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Theme(
+                                              data: ThemeData(
+                                                  unselectedWidgetColor:
+                                                      Colors.white30),
+                                              child: new CheckboxListTile(
+                                                  checkColor: kPrimaryColor,
+                                                  tileColor: Colors.white,
+                                                  activeColor: KBackgroundColor,
+                                                  value:
+                                                      inputs.contains(inter.id),
+                                                  title: new Text(
+                                                    inter.title_en,
+                                                    style: TextStyle(
+                                                        color: Colors.white70,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        fontSize: 14),
+                                                  ),
+                                                  controlAffinity:
+                                                      ListTileControlAffinity
+                                                          .leading,
+                                                  onChanged: (bool val) {
+                                                    itemChange(val, inter.id);
+                                                  })),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+                              return Center();
+                            }),
+
+                        // ListView(
+                        //   shrinkWrap: true,
+                        //   children: <Widget>[
+                        //     LabeledCheckbox(
+                        //         textColor: Colors.white,
+                        //         activeColor: kPrimaryColor,
+                        //         label: "Arts & Culture",
+                        //         value: this.checkBoxValArts,
+                        //         onTap: (bool value) {
+                        //           setState(() {
+                        //             this.checkBoxValArts = value;
+                        //           });
+                        //         }),
+                        //     SizedBox(
+                        //         height: getProportionateScreenHeight(
+                        //             SizeConfig.screenHeight * 0.01)),
+                        //     LabeledCheckbox(
+                        //         textColor: Colors.white,
+                        //         activeColor: kPrimaryColor,
+                        //         label: "Wellnerss & Beauty",
+                        //         value: this.checkBoxValBeauty,
+                        //         onTap: (bool value) {
+                        //           setState(() {
+                        //             this.checkBoxValBeauty = value;
+                        //           });
+                        //         }),
+                        //     SizedBox(
+                        //         height: getProportionateScreenHeight(
+                        //             SizeConfig.screenHeight * 0.01)),
+                        //     LabeledCheckbox(
+                        //         textColor: Colors.white,
+                        //         activeColor: kPrimaryColor,
+                        //         label: "Shopping",
+                        //         value: this.checkBoxValShopping,
+                        //         onTap: (bool value) {
+                        //           setState(() {
+                        //             this.checkBoxValShopping = value;
+                        //           });
+                        //         }),
+                        //   ],
+                        // ),
                       ),
                       SizedBox(
                           height: getProportionateScreenHeight(
@@ -172,10 +263,10 @@ class _OccupationFormState extends State<OccupationForm> {
                               label: 'Search Engine',
                               textColor: Colors.white,
                               value: 'Search Engine',
-                              groupValue: _isRadioSelected,
+                              groupValue: _referenceSelected,
                               onChanged: (newValue) {
                                 setState(() {
-                                  _isRadioSelected = newValue;
+                                  _referenceSelected = newValue;
                                 });
                               },
                             ),
@@ -187,10 +278,10 @@ class _OccupationFormState extends State<OccupationForm> {
                               label: 'Referral',
                               textColor: Colors.white,
                               value: 'Referral',
-                              groupValue: _isRadioSelected,
+                              groupValue: _referenceSelected,
                               onChanged: (newValue) {
                                 setState(() {
-                                  _isRadioSelected = newValue;
+                                  _referenceSelected = newValue;
                                 });
                               },
                             ),
@@ -202,10 +293,10 @@ class _OccupationFormState extends State<OccupationForm> {
                               label: 'Social Media',
                               textColor: Colors.white,
                               value: 'Social Media',
-                              groupValue: _isRadioSelected,
+                              groupValue: _referenceSelected,
                               onChanged: (newValue) {
                                 setState(() {
-                                  _isRadioSelected = newValue;
+                                  _referenceSelected = newValue;
                                 });
                               },
                             ),
@@ -213,6 +304,9 @@ class _OccupationFormState extends State<OccupationForm> {
                         ),
                       ),
                       FormError(errors: errors),
+                      SizedBox(
+                          height: getProportionateScreenHeight(
+                              SizeConfig.screenHeight * 0.02)),
                     ],
                   ),
                 ),
@@ -229,8 +323,11 @@ class _OccupationFormState extends State<OccupationForm> {
                         password: widget.membership.password,
                         dob: widget.membership.dob,
                         country: widget.membership.country,
+                        packageid: widget.membership.packageid,
                         companyName: companyName,
-                        position: position);
+                        position: position,
+                        reference: _referenceSelected,
+                        userinterests: getIntersed(inputs));
                     Navigator.pushNamed(context, SubmitApplication.routeName,
                         arguments: membership);
                   }
@@ -273,6 +370,17 @@ class _OccupationFormState extends State<OccupationForm> {
             ],
           ),
         ));
+  }
+
+  String getIntersed(List<String> ls) {
+    String val = "[";
+    ls.forEach((x) {
+      val += "{'id':'${x.toString()}'},";
+    });
+    if (ls.length > 1) val = val.substring(0, val.length - 1);
+    val += "]";
+    print(val);
+    return val;
   }
 
   TextFormField buildCompanyNameField() {

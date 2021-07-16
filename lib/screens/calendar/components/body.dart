@@ -1,13 +1,18 @@
 // import 'package:intl/date_symbol_data_local.dart';
 import 'dart:convert';
-
-import 'package:redcircleflutter/components/RequestCard.dart';
+import 'package:add_2_calendar/add_2_calendar.dart' as add_2_calendar;
+import 'package:redcircleflutter/apis/api.dart';
+import 'package:redcircleflutter/components/requestCard.dart';
+import 'package:redcircleflutter/constants.dart';
 import 'package:redcircleflutter/models/Booking.dart';
+import 'package:redcircleflutter/screens/BookingServices/components/Booking_description.dart';
+import 'package:redcircleflutter/screens/offers/components/offer_description.dart';
+import 'package:redcircleflutter/size_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
-import '../../../constants.dart';
-import '../../../size_config.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 // final Map<DateTime, List> _holidays = {
 //   DateTime(2020, 1, 1): ['New Year\'s Day'],
@@ -33,6 +38,109 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
   AnimationController _animationController;
   CalendarController _calendarController;
 
+  Future<Map<DateTime, List>> getTask() async {
+    Map<DateTime, List> mapFetch = {};
+
+    await Future.delayed(const Duration(seconds: 3), () {});
+
+    /*String link = baseURL + fetchTodoByDate;
+    var res = await http.post(Uri.encodeFull(link), headers: {"Accept": "application/json"});
+    if (res.statusCode == 200) {
+      // need help in creating fetch logic here
+    }*/
+
+    String responseString =
+        '''
+    {
+    "error": "0",
+    "message": "Got it!",
+    "data": [
+        {
+            "status": false,
+            "_id": "5e04a27692928701258b9b06",
+            "group_id": "5df8aaae2f85481f6e31db59",
+            "date": "2019-12-29T00:00:00.000Z",
+            "title": "new task",
+            "priority": 5,
+            "description": "just a description",
+            "tasks": [],
+            "created_date": "2019-12-26T12:07:18.301Z",
+            "__v": 0
+        },
+        {
+            "status": false,
+            "_id": "5e04a27692928701258b9b06",
+            "group_id": "5df8aaae2f85481f6e31db59",
+            "date": "2019-12-30T00:00:00.000Z",
+            "title": "abc",
+            "priority": 5,
+            "description": "just a description",
+            "tasks": [],
+            "created_date": "2019-12-26T12:07:18.301Z",
+            "__v": 0
+        }
+    ]
+}
+    ''';
+
+    Event event = eventFromJson(responseString);
+
+    for (int i = 0; i < event.data.length; i++) {
+      mapFetch[event.data[i].date] = [event.data[i].title];
+    }
+
+    return mapFetch;
+  }
+
+  Future<Map<DateTime, List>> getTask1() async {
+    Map<DateTime, List> mapFetch = {};
+
+    SharedPreferences _pref = await SharedPreferences.getInstance();
+    String clientId = _pref.getString(kclientIdPrefKey);
+    String url = root +
+        "/" +
+        get_bookings_calander +
+        "?token=" +
+        token +
+        "&client_id=" +
+        clientId.toString() +
+        "&status=3";
+    print(url);
+    dynamic responce =
+        await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
+    print(" ${responce.body}");
+
+    if (responce.statusCode == 200) {
+      Map<String, dynamic> res = jsonDecode(responce.body);
+      if (res['result'] == 1) {
+        Event1 event = event1FromJson(responce.body);
+        for (int i = 0; i < event.data.length; i++) {
+          mapFetch[event.data[i].date] = [event.data[i].bookings];
+        }
+      }
+    }
+
+    //await Future.delayed(const Duration(seconds: 3), () {});
+
+    // String responseString1 = '''
+    // {
+    // "result": 1,
+    // "message": "All Bookings",
+    // "data":[{"date": "2021-06-11","bookings": [{ "id": "1", "title": "title1","description":"desc1" }, { "id": "2", "title": "title2","description":"desc2" },{ "id": "3", "title": "title3","description":"desc3" }]},
+    // {"date": "2021-06-12","bookings": [{ "id": "1", "title": "title11","description":"desc111" }, { "id": "2", "title": "title22","description":"desc222" },{ "id": "3", "title": "title33","description":"desc333" }]}
+    //   ]
+    // }
+    // ''';
+
+    // Event1 event = event1FromJson(responseString1);
+
+    // for (int i = 0; i < event.data.length; i++) {
+    //   mapFetch[event.data[i].date] = [event.data[i].bookings];
+    // }
+
+    return mapFetch;
+  }
+
   static Map<DateTime, List> decodeMap(Map<String, dynamic> map) {
     Map<DateTime, List> newMap = {};
     map.forEach((key, value) {
@@ -56,8 +164,13 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
     //     await http.get(Uri.parse(url), headers: {"Accept": "application/json"});
     // print(" ${responce.body}");
 
-    return Map<DateTime, List<dynamic>>.from(
-        decodeMap(json.decode(calendarBookingval1 ?? "{}")));
+    Map<String, dynamic> res5 = jsonDecode(calendarBookingval1);
+    return Map<DateTime, List<dynamic>>.from(decodeMap(res5));
+
+    Map<String, dynamic> res2 = jsonDecode(calendarBookingval);
+    Map<String, dynamic> res4 = jsonDecode(res2['data'].toString());
+
+    return Map<DateTime, List<dynamic>>.from(decodeMap(res4));
 
     // if (responce.statusCode == 200) {
     Map<String, dynamic> res = jsonDecode(calendarBookingval); //responce.body
@@ -106,56 +219,49 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
   Future<Map<DateTime, List>> futureBooking;
   @override
   void initState() {
-    fetchBooking().then((value) {
+    getTask1().then((val) {
       setState(() {
-        _events = value;
+        _events = val;
+
+        DateTime now = new DateTime.now();
+        DateTime date = new DateTime(now.year, now.month, now.day);
+        _selectedDay = formatter.format(date);
+        _selectedEvents = _events[date] ?? [];
+
+        // _calendarController.setSelectedDay(DateTime.now(),
+        //     isProgrammatic: true);
+        // _calendarController.setSelectedDay(DateTime.now(), runCallback: true);
       });
     });
-    super.initState();
+    //     void _selectDay(DateTime day) {
+    //   setState(() {
+    //     widget.calendarController.setSelectedDay(day, isProgrammatic: false);
+    //     _selectedDayCallback(day);
+    //   });
+    // }
+    // _calendarController.setSelectedDay(DateTime.now(), isProgrammatic: true);
 
-    final nowDay = DateTime.now();
-    _selectedEvents = _events[nowDay] ?? [];
+    // setState(() {
+    //   _events = val;
+    //   _selectedDay = formatter.format(DateTime.now());
+    //   _selectedEvents = _events[DateTime.now()] ?? [];
+    //   _calendarController.setCalendarFormat((_selectedEvents.length != 0)
+    //       ? CalendarFormat.week
+    //       : CalendarFormat.month);
+    //   _animationController.forward(from: 1.0);
+    //   // _calendarController.setSelectedDay(DateTime.now(),
+    //   //     isProgrammatic: true);
+    // });
+
+    // _selectedEvents = [];
+    DateTime now = new DateTime.now();
+    DateTime date = new DateTime(now.year, now.month, now.day);
+    _selectedEvents = _events[date] ?? [];
 
     // final nowDay = DateTime.now();
-    // _events = {
-    //   nowDay: [
-    //     new Booking(
-    //         id: calanderBooking[0].id,
-    //         mainImg: calanderBooking[0].mainImg,
-    //         title: calanderBooking[0].title,
-    //         description: calanderBooking[0].description),
-    //     new Booking(
-    //         id: calanderBooking[1].id,
-    //         mainImg: calanderBooking[1].mainImg,
-    //         title: calanderBooking[1].title,
-    //         description: calanderBooking[1].description),
-    //     new Booking(
-    //         id: calanderBooking[0].id,
-    //         mainImg: calanderBooking[0].mainImg,
-    //         title: calanderBooking[0].title,
-    //         description: calanderBooking[0].description),
-    //     new Booking(
-    //         id: calanderBooking[1].id,
-    //         mainImg: calanderBooking[1].mainImg,
-    //         title: calanderBooking[1].title,
-    //         description: calanderBooking[1].description),
-    //   ],
-    //   DateTime.parse('2021-03-29'): [
-    //     new Booking(
-    //         id: calanderBooking[0].id,
-    //         mainImg: calanderBooking[0].mainImg,
-    //         title: calanderBooking[0].title,
-    //         description: calanderBooking[0].description),
-    //     new Booking(
-    //         id: calanderBooking[1].id,
-    //         mainImg: calanderBooking[1].mainImg,
-    //         title: calanderBooking[1].title,
-    //         description: calanderBooking[1].description)
-    //   ],
-    // };
     // _selectedEvents = _events[nowDay] ?? [];
-
     _selectedDay = formatter.format(DateTime.now());
+
     _calendarController = CalendarController();
 
     _animationController = AnimationController(
@@ -164,6 +270,7 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
     );
 
     _animationController.forward();
+    super.initState();
   }
 
   @override
@@ -217,11 +324,11 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
               padding: const EdgeInsets.only(
                   right: 8.0, left: 8.0, bottom: 8.0, top: 20),
               child: Text(
-                _selectedDay.toString(),
+                "",
+                //_selectedDay.toString(),
                 style: TextStyle(fontSize: 18),
               ),
             ),
-
             Expanded(
                 child: Padding(
                     padding: const EdgeInsets.only(right: 8, left: 8),
@@ -461,89 +568,60 @@ class _BodyState extends State<Body> with TickerProviderStateMixin {
     );
   }
 
-  // Widget _buildHolidaysMarker() {
-  //   return Icon(
-  //     Icons.add_box,
-  //     size: 20.0,
-  //     color: Colors.blueGrey[800],
-  //   );
-  // }
-
-  // Widget _buildButtons() {
-  //   final dateTime = _events.keys.elementAt(_events.length - 2);
-
-  //   return Column(
-  //     children: <Widget>[
-  //       Row(
-  //         mainAxisSize: MainAxisSize.max,
-  //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //         children: <Widget>[
-  //           TextButton(
-  //             child: Text('Month'),
-  //             onPressed: () {
-  //               setState(() {
-  //                 _calendarController.setCalendarFormat(CalendarFormat.month);
-  //               });
-  //             },
-  //           ),
-  //           TextButton(
-  //             child: Text('2 weeks'),
-  //             onPressed: () {
-  //               setState(() {
-  //                 _calendarController
-  //                     .setCalendarFormat(CalendarFormat.twoWeeks);
-  //               });
-  //             },
-  //           ),
-  //           TextButton(
-  //             child: Text('Week'),
-  //             onPressed: () {
-  //               setState(() {
-  //                 _calendarController.setCalendarFormat(CalendarFormat.week);
-  //               });
-  //             },
-  //           ),
-  //         ],
-  //       ),
-  //       const SizedBox(height: 8.0),
-  //       TextButton(
-  //         child: Text(
-  //             'Set day ${dateTime.day}-${dateTime.month}-${dateTime.year}'),
-  //         onPressed: () {
-  //           _calendarController.setSelectedDay(
-  //             DateTime(dateTime.year, dateTime.month, dateTime.day),
-  //             runCallback: true,
-  //           );
-  //         },
-  //       ),
-  //     ],
-  //   );
-  // }
-
   Widget _buildEventList() {
-    return ListView(
-      children: _selectedEvents
-          .map((event) => RequestCard(
-                    id: event.id,
-                    title: event.title,
-                    mainImage: "",
-                    description: event.description,
-                    subtitle: "",
-                  )
-              //     Container(
-              //   decoration: BoxDecoration(
-              //     border: Border.all(width: 0.8),
-              //     borderRadius: BorderRadius.circular(12.0),
-              //   ),
-              //   margin:
-              //       const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-              //   child: ListTile(
-              //     title: Text(event.toString()),
-              //     onTap: () => print('$event tapped!'),
-              //   ),
-              // ),
-              )
-          .toList(),
-    );
+    List<Booking> calendar = [];
+    (_selectedEvents).map((i) {
+      print(i);
+      List<Booking>.from(i.map((j) {
+        print(j);
+        calendar.add(Booking.fromJson(j));
+      })).toList();
+    }).toList();
+
+    return new ListView.builder(
+        itemCount: calendar.length,
+        itemBuilder: (BuildContext ctxt, int index) {
+          return RequestCard(
+              id: calendar[index].id,
+              title: calendar[index].title,
+              mainImage: calendar[index].mainImg,
+              description: calendar[index].description,
+              subtitle: calendar[index].subtitle,
+              onSyncCalendar: () {
+                final add_2_calendar.Event event = add_2_calendar.Event(
+                  title: calendar[index].title,
+                  description: '',
+                  location: '',
+                  startDate: calendar[index].startDate,
+                  endDate: calendar[index].endDate,
+                  iosParams: add_2_calendar.IOSParams(
+                    reminder: Duration(
+                        /* Ex. hours:1 */), // on iOS, you can set alarm notification after your event.
+                  ),
+                  androidParams: add_2_calendar.AndroidParams(
+                    emailInvites: [], // on Android, you can add invite emails to your event.
+                  ),
+                );
+                add_2_calendar.Add2Calendar.addEvent2Cal(event);
+              },
+              onTapCard: () async {
+                (calendar[index].isOffer == null ||
+                        calendar[index].isOffer == "0")
+                    ? Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BookingDescription(
+                              productId: calendar[index].listingId),
+                        ),
+                      )
+                    : Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OfferDescription(
+                            productId: calendar[index].listingId,
+                          ),
+                        ));
+              });
+        });
   }
 }

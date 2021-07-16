@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:redcircleflutter/screens/registration/membership.dart';
+import 'package:redcircleflutter/size_config.dart';
 
-import '../../../../size_config.dart';
 import 'SubmitForm.dart';
-// import 'aboutYou.dart';
 
 class Body extends StatelessWidget {
   final Membership membership;
